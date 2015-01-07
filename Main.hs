@@ -109,15 +109,21 @@ joinAll :: (Chan Message, Chan Message) -> [C.ByteString] -> IO ()
 joinAll chann = mapM_ (joinChannnel chann)
 
 main = do
-  ((s,r), th) <- connect serv1
-  th <- (:th) <$> makeBot (s,r) pingBot
-  readChan r
-  readChan r
-  let channels = map fst transChannel
-  joinAll (s, r) channels
-  joinAll (s, r) $ map snd transChannel
-  
-  th <- (:th) <$> makeBot (s,r) (transBot transChannel s)
+  ((s1,r1), th1) <- connect serv1
+  ((s2,r2), th2) <- connect serv2
+  let th = th1 ++ th2
+  th <- (:th) <$> makeBot (s1,r1) pingBot
+  th <- (:th) <$> makeBot (s2,r2) pingBot
+  readChan r1
+  readChan r2
+  readChan r1
+  readChan r2
+  joinAll (s1, r1) $ map fst transChannel
+  joinAll (s2, r2) $ map snd transChannel
+
+  let transChannelReversed = map swap transChannel
+  th <- (:th) <$> makeBot (s1,r1) (transBot transChannel s2)
+  th <- (:th) <$> makeBot (s2,r2) (transBot transChannelReversed s1)
 
   getLine
   return ()
