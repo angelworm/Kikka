@@ -4,6 +4,7 @@ import Control.Applicative
 import Data.Monoid
 import Data.Maybe
 import Data.List
+import Data.Tuple
 import Control.Concurrent (ThreadId, forkIO, threadDelay)
 import Control.Concurrent.Chan (Chan, dupChan, newChan, readChan, writeChan)
 import Control.Monad
